@@ -6,13 +6,13 @@
 %% This implementation is provided with unit tests, however, these tests are
 %% neither complete nor implementation independent, so be careful when reusing
 %% them.
--module(server_centralized).
+-module(server_para).
 
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
-    initialize/0,
-    initialize_with/1,
+    init_instance/1,
+    initialize_with/2,
     server_actor/1,
     typical_session_1/1,
     typical_session_2/1,
@@ -27,15 +27,15 @@ start() ->
 %%
 
 % Start server.
-initialize() ->
-    initialize_with(dict:new()).
+init_instance(Address) ->
+    initialize_with(Address, dict:new()).
 
 % Start server with an initial state.
 % Useful for benchmarking.
-initialize_with(Users) ->
+initialize_with(Address, Users) ->
     ServerPid = spawn_link(?MODULE, server_actor, [Users]),
     catch unregister(server_actor),
-    register(server_actor, ServerPid),
+    register(Address, ServerPid),
     ServerPid.
 
 % The server actor works like a small database and encapsulates all state of
@@ -57,6 +57,14 @@ server_actor(Users) ->
             Sender ! {self(), logged_in},
             server_actor(Users);
         {Sender, follow, UserName, UserNameToFollow} ->
+            [_, UserDomain] = string:tokens(UserName, "@"),
+            [_, ToFollowDomain] = string:tokens(UserNameToFollow, "@"),
+            io:format("~s", [UserDomain]),
+            io:format("~s", [ToFollowDomain]),
+            if 
+                UserDomain == ToFollowDomain -> %blabla
+                
+
             NewUsers = follow(Users, UserName, UserNameToFollow),
             Sender ! {self(), followed},
             server_actor(NewUsers);
@@ -138,7 +146,7 @@ sort_messages(Messages) ->
 % Test initialize function.
 initialize_test() ->
     catch unregister(server_actor),
-    initialize().
+    initialize('miauw').
 
 % Initialize server and test user registration of 4 users.
 % Returns list of user names to be used in subsequent tests.

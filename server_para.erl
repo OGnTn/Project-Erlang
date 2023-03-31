@@ -35,10 +35,9 @@ init_instance(Address) ->
 initialize_with(Address, Users) ->
     ServerPid = spawn_link(?MODULE, server_actor, [Users]),
     catch unregister(server_actor),
-    register(Address, ServerPid),
-
-    io:format("Server started at ~p~n", [Address]),
+    io:format("Server starting at ~p~n", [Address]),
     io:format("Server PID: ~p~n", [ServerPid]),
+    register(Address, ServerPid),
     ServerPid.
 
 % The server actor works like a small database and encapsulates all state of

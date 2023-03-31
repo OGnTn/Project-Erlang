@@ -1,0 +1,114 @@
+Timeline test with varying user count
+User count: 1000
+Parameters:
+Number of users: 1000
+Number of subscriptions: 30
+Number of messages: 20
+Number of instances: 4
+
+Server started at '1'
+Server PID: <0.75.0>
+Server started at '2'
+Server PID: <0.76.0>
+Server started at '3'
+Server PID: <0.77.0>
+Server started at '4'
+Server PID: <0.78.0>
+Starting benchmark timeline: 1
+Wall clock time = 768.392 ms
+timeline done
+Starting benchmark timeline: 2
+Wall clock time = 587.249 ms
+timeline done
+Starting benchmark timeline: 3
+Wall clock time = 554.485 ms
+timeline done
+Starting benchmark timeline: 4
+Wall clock time = 567.465 ms
+timeline done
+Starting benchmark timeline: 5
+Wall clock time = 641.89 ms
+timeline done
+Starting benchmark timeline: 6
+Wall clock time = 612.53 ms
+timeline done
+Starting benchmark timeline: 7
+Wall clock time = 572.898 ms
+timeline done
+Starting benchmark timeline: 8
+Wall clock time = 556.938 ms
+timeline done
+Starting benchmark timeline: 9
+Wall clock time = 583.642 ms
+timeline done
+Starting benchmark timeline: 10
+Wall clock time = 663.988 ms
+timeline done
+Starting benchmark timeline: 11
+Wall clock time = 721.01 ms
+timeline done
+Starting benchmark timeline: 12
+Wall clock time = 572.035 ms
+timeline done
+Starting benchmark timeline: 13
+Wall clock time = 588.943 ms
+timeline done
+Starting benchmark timeline: 14
+Wall clock time = 589.542 ms
+timeline done
+Starting benchmark timeline: 15
+Wall clock time = 581.925 ms
+timeline done
+Starting benchmark timeline: 16
+Wall clock time = 594.765 ms
+timeline done
+Starting benchmark timeline: 17
+Wall clock time = 570.595 ms
+timeline done
+Starting benchmark timeline: 18
+Wall clock time = 591.234 ms
+timeline done
+Starting benchmark timeline: 19
+Wall clock time = 574.552 ms
+timeline done
+Starting benchmark timeline: 20
+Wall clock time = 571.55 ms
+timeline done
+Starting benchmark timeline: 21
+Wall clock time = 564.525 ms
+timeline done
+Starting benchmark timeline: 22
+Wall clock time = 551.345 ms
+timeline done
+Starting benchmark timeline: 23
+Wall clock time = 558.184 ms
+timeline done
+Starting benchmark timeline: 24
+Wall clock time = 596.357 ms
+timeline done
+Starting benchmark timeline: 25
+Wall clock time = 574.471 ms
+timeline done
+Starting benchmark timeline: 26
+Wall clock time = 577.105 ms
+timeline done
+Starting benchmark timeline: 27
+Wall clock time = 574.161 ms
+timeline done
+Starting benchmark timeline: 28
+Wall clock time = 576.118 ms
+timeline done
+Starting benchmark timeline: 29
+Wall clock time = 571.956 ms
+timeline done
+Starting benchmark timeline: 30
+Wall clock time = 569.739 ms
+timeline done
+User count: 2000
+Parameters:
+Number of users: 2000
+Number of subscriptions: 30
+Number of messages: 20
+Number of instances: 4
+
+{"init terminating in do_boot",{badarg,[{erlang,register,['1',<0.109.0>],[]},{server_para,initialize_with,2,[{file,"server_para.erl"},{line,38}]},{benchmark,'-initialize_instances/6-fun-1-',7,[{file,"benchmark.erl"},{line,231}]},{lists,map,2,[{file,"lists.erl"},{line,1239}]},{benchmark,initialize_instances,6,[{file,"benchmark.erl"},{line,219}]},{benchmark,'-test_timeline_para/0-fun-2-',1,[{file,"benchmark.erl"},{line,252}]},{lists,foreach,2,[{file,"lists.erl"},{line,1338}]},{init,start_em,1,[]}]}}

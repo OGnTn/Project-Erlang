@@ -197,16 +197,16 @@ generate_user_dict(
     %io:format("Users: ~p~n", [Users]),
     Users.
 
-initialize_instances() ->
+initialize_instances(
+    NumberOfUsers,
+    NumberOfSubscriptions,
+    LocalSubscriptions,
+    RemoteSubscriptions,
+    NumberOfMessages,
+    NumberOfInstances
+) ->
     rand:seed_s(exsplus, {0, 0, 0}),
     % Parameters
-    NumberOfUsers = 1000,
-    NumberOfSubscriptions = 30,
-    LocalSubscriptions = 15,
-    RemoteSubscriptions = 15,
-
-    NumberOfMessages = 20,
-    NumberOfInstances = 4,
     io:format("Parameters:~n"),
     io:format("Number of users: ~p~n", [NumberOfUsers]),
     io:format("Number of subscriptions: ~p~n", [NumberOfSubscriptions]),
@@ -228,6 +228,7 @@ initialize_instances() ->
                     NumberOfInstances,
                     Name
                 ),
+                io:format("Instance: ~p~n", [list_to_atom(Name)]),
                 server_para:initialize_with(list_to_atom(Name), UserDict),
                 {Name, UserDict}
             end,
@@ -245,49 +246,77 @@ generate_message(UserName, I) ->
 
 % Get timeline of 10000 users (repeated 30 times).
 test_timeline_para() ->
-    Instances = initialize_instances(),
-    InstanceNames = dict:fetch_keys(Instances),
+    io:format("Timeline test with varying user count~n"),
+    lists:foreach(
+        fun(Count) ->
+            io:format("User count: ~p~n", [Count * 1000]),
+            Instances = initialize_instances(Count * 1000, 30, 15, 15, 20, 4),
+            InstanceNames = dict:fetch_keys(Instances),
 
-    run_benchmark(
-        "timeline",
-        fun() ->
-            lists:foreach(
-                fun(_) ->
-                    Instance = pick_random(InstanceNames),
-                    UserDict = dict:fetch(Instance, Instances),
-                    Users = dict:fetch_keys(UserDict),
-                    User = pick_random(Users),
-                    InstanceAtom = list_to_atom(Instance),
-                    server:get_timeline(
-                        InstanceAtom, User
+            run_benchmark(
+                "timeline",
+                fun() ->
+                    lists:foreach(
+                        fun(_) ->
+                            Instance = pick_random(InstanceNames),
+                            UserDict = dict:fetch(Instance, Instances),
+                            Users = dict:fetch_keys(UserDict),
+                            User = pick_random(Users),
+                            InstanceAtom = list_to_atom(Instance),
+                            server:get_timeline(
+                                InstanceAtom, User
+                            )
+                        end,
+                        lists:seq(1, 1000)
                     )
                 end,
-                lists:seq(1, 1000)
+                30
+            ),
+            lists:foreach(
+                fun(Instance) ->
+                    InstanceAtom = list_to_atom(Instance),
+                    unregister(InstanceAtom)
+                end,
+                InstanceNames
             )
         end,
-        30
+        lists:seq(1, 15)
     ).
 
 test_send_message_para() ->
-    Instances = initialize_instances(),
-    InstanceNames = dict:fetch_keys(Instances),
+    io:format("Send message test with varying user count~n"),
+    lists:foreach(
+        fun(Count) ->
+            io:format("User count~p~n", [Count * 1000]),
+            Instances = initialize_instances(Count * 1000, 30, 15, 15, 20, 4),
+            InstanceNames = dict:fetch_keys(Instances),
 
-    run_benchmark(
-        "send_message",
-        fun() ->
-            lists:foreach(
-                fun(_) ->
-                    Instance = pick_random(InstanceNames),
-                    UserDict = dict:fetch(Instance, Instances),
-                    Users = dict:fetch_keys(UserDict),
-                    User = pick_random(Users),
-                    InstanceAtom = list_to_atom(Instance),
-                    server:send_message(InstanceAtom, User, "Test")
+            run_benchmark(
+                "send_message",
+                fun() ->
+                    lists:foreach(
+                        fun(_) ->
+                            Instance = pick_random(InstanceNames),
+                            UserDict = dict:fetch(Instance, Instances),
+                            Users = dict:fetch_keys(UserDict),
+                            User = pick_random(Users),
+                            InstanceAtom = list_to_atom(Instance),
+                            server:send_message(InstanceAtom, User, "Test")
+                        end,
+                        lists:seq(1, 1000)
+                    )
                 end,
-                lists:seq(1, 1000)
+                30
+            ),
+            lists:foreach(
+                fun(Instance) ->
+                    InstanceAtom = list_to_atom(Instance),
+                    unregister(InstanceAtom)
+                end,
+                InstanceNames
             )
         end,
-        30
+        lists:seq(1, 15)
     ).
 
 % Get timeline of 10000 users (repeated 30 times).

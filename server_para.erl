@@ -16,10 +16,12 @@
     server_actor/1,
     typical_session_1/1,
     typical_session_2/1,
-    start/0
+    initialize/0
 ]).
 
-start() ->
+
+
+initialize() ->
     io:fwrite("Hello World!~n").
 
 %%
@@ -57,14 +59,6 @@ server_actor(Users) ->
             Sender ! {self(), logged_in},
             server_actor(Users);
         {Sender, follow, UserName, UserNameToFollow} ->
-            [_, UserDomain] = string:tokens(UserName, "@"),
-            [_, ToFollowDomain] = string:tokens(UserNameToFollow, "@"),
-            io:format("~s", [UserDomain]),
-            io:format("~s", [ToFollowDomain]),
-            if 
-                UserDomain == ToFollowDomain -> %blabla
-                
-
             NewUsers = follow(Users, UserName, UserNameToFollow),
             Sender ! {self(), followed},
             server_actor(NewUsers);
@@ -76,7 +70,25 @@ server_actor(Users) ->
             Sender ! {self(), timeline, UserName, timeline(Users, UserName)},
             server_actor(Users);
         {Sender, get_profile, UserName} ->
-            Sender ! {self(), profile, UserName, sort_messages(get_messages(Users, UserName))},
+            % split address from name
+            [Name, Domain] = string:tokens(UserName, "@"),
+            %get Pid of domain with Address
+            DomainPid = whereis(list_to_atom(Domain)),
+            %the address is the current server
+            if
+                DomainPid == self() ->
+                    %send the profile to the sender
+                    Sender !
+                        {
+                            self(),
+                            profile,
+                            UserName,
+                            sort_messages(get_messages(Users, Name))
+                        };
+                %the address is remote
+                DomainPid =/= self() ->
+                    DomainPid ! {Sender, get_profile, UserName}
+            end,
             server_actor(Users)
     end.
 
@@ -122,7 +134,20 @@ timeline(Users, UserName) ->
     UnsortedMessagesForTimeLine =
         lists:foldl(
             fun(FollowedUserName, AllMessages) ->
-                AllMessages ++ get_messages(Users, FollowedUserName)
+                ContainsAt = string:str(FollowedUserName, "@"),
+                if
+                    ContainsAt > 0 ->
+                        [_Name, Domain] = string:tokens(FollowedUserName, "@"),
+                        DomainPid = whereis(list_to_atom(Domain)),
+                        DomainPid ! {self(), get_profile, FollowedUserName},
+                        receive
+                            {_ResponsePid, profile, FollowedUserName, Messages} ->
+                                Messages
+                        end,
+                        AllMessages ++ Messages;
+                    true ->
+                        AllMessages ++ get_messages(Users, FollowedUserName)
+                end
             end,
             [],
             sets:to_list(Subscriptions)
@@ -146,7 +171,7 @@ sort_messages(Messages) ->
 % Test initialize function.
 initialize_test() ->
     catch unregister(server_actor),
-    initialize('miauw').
+    initialize().
 
 % Initialize server and test user registration of 4 users.
 % Returns list of user names to be used in subsequent tests.

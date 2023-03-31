@@ -280,7 +280,7 @@ test_timeline_para() ->
                 InstanceNames
             )
         end,
-        lists:seq(1, 15)
+        lists:seq(1, 10)
     ).
 
 test_send_message_para() ->
@@ -316,7 +316,7 @@ test_send_message_para() ->
                 InstanceNames
             )
         end,
-        lists:seq(1, 15)
+        lists:seq(1, 10)
     ).
 
 % Get timeline of 10000 users (repeated 30 times).

@@ -8,11 +8,7 @@ set -euo pipefail
 for i in 2 4 8 16 32 64
 do
     echo "---"
-    echo "> timeline, $i threads"
-    erl +S $i -noshell -s benchmark test_timeline_para_users -s init stop > "benchmarks/result-timeline-$i.txt"
-    echo "---"
-    echo "---"
     echo "> message, $i threads"
-    erl +S $i -noshell -s benchmark test_send_message_para_users -s init stop > "benchmarks/result-message-$i.txt"
+    erl +S $i -noshell -s benchmark test_send_message_para_users -s init stop > "benchmarks/result-message-users-$i.txt"
     echo "---"
 done
